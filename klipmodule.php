@@ -36,22 +36,8 @@ public function __construct()
     public function renderTable()
     {
         $topSellingProducts = $this->getTopSellingProducts();
-
-        $html = '<h3>' . $this->l('Top Selling Products') . '</h3>';
-        $html .= '<table class="table">';
-        $html .= '<thead><tr><th>ID</th><th>Name</th><th>TotalSold</th></tr></thead><tbody>';
-
-        foreach ($topSellingProducts as $product) {
-            $html .= '<tr>';
-            $html .= '<td>' . (int) $product['id_product'] . '</td>';
-            $html .= '<td>' . htmlspecialchars($product['name']) . '</td>';
-            $html .= '<td>' . htmlspecialchars($product['total_sales']) . '</td>';
-            $html .= '</tr>';
-        }
-
-        $html .= '</tbody></table>';
-
-        return $html;
+        $this->context->smarty->assign('products', $topSellingProducts);
+        return $this->display(__FILE__, 'views/templates/table.tpl');
     }
 
      public function getTopSellingProducts($limit = 5)
