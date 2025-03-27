@@ -13,6 +13,7 @@ public function __construct()
             $this->author = 'Vilius, Dainius, Linas';
             $this->version = '1.0.0';
             $this->description = 'This module will display top selling products on the homepage';
+            $this->bootstrap = true;
             parent:: __construct();
             $this->description = $this->trans('Showing Top Selling products created by Dainius,Vilius and Linas', [], 'Modules.klipmodule.Admin');
 
