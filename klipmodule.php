@@ -3,57 +3,56 @@
 if (!defined('_PS_VERSION_')) {
     exit;
 }
-class mymodule extends Module
+class klipmodule extends Module
 {
 
 public function __construct()
     {
-            $this-> name = 'mymodule';
+            $this-> name = 'klipmodule';
             $this->tab = 'dashboard';
-            $this->author = 'ForzenWillow';
+            $this->author = 'Vilius, Dainius, Linas';
             $this->version = '1.0.0';
             $this->description = 'This module will display top selling products on the homepage';
-
             parent:: __construct();
-            $this->description = $this->trans('Showing Top Selling products created by Dainius,Vilius and Linas', [], 'Modules.mymodule.Admin');
+            $this->description = $this->trans('Showing Top Selling products created by Dainius,Vilius and Linas', [], 'Modules.klipmodule.Admin');
 
-            
-    
     }
 
     public function install()
     {
-        return parent::install() && $this->registerHook('displayExpressCheckout');
+        return parent::install();
     }
 
     public function uninstall()
     {
-        return parent::uninstall() && $this->unregisterHook('displayExpressCheckout');
+        return parent::uninstall();
     }
 
+    public function getContent()
+    {
+        return $this->renderTable();
+    }
 
+    public function renderTable()
+    {
+        $topSellingProducts = $this->getTopSellingProducts();
 
+        $html = '<h3>' . $this->l('Top Selling Products') . '</h3>';
+        $html .= '<table class="table">';
+        $html .= '<thead><tr><th>ID</th><th>Name</th><th>TotalSold</th></tr></thead><tbody>';
 
+        foreach ($topSellingProducts as $product) {
+            $html .= '<tr>';
+            $html .= '<td>' . (int) $product['id_product'] . '</td>';
+            $html .= '<td>' . htmlspecialchars($product['name']) . '</td>';
+            $html .= '<td>' . htmlspecialchars($product['total_sales']) . '</td>';
+            $html .= '</tr>';
+        }
 
-    // public function install()
-    // {
-    //     return parent::install() && $this->registerHook('displayHome');
-    // }
+        $html .= '</tbody></table>';
 
-    // public function uninstall()
-    // {
-    //     return parent::uninstall() && $this->unregisterHook('displayHome');
-    // }
-
-     public function hookDisplayExpressCheckout($params)
-     {
-         $topSellingProducts = $this->getTopSellingProducts();
-
-         $this->context->smarty->assign('topSellingProducts', $topSellingProducts);
-
-         return $this->display(__FILE__, 'mymodule.tpl');
-        
-     }
+        return $html;
+    }
 
      public function getTopSellingProducts($limit = 5)
     {
@@ -71,7 +70,6 @@ public function __construct()
         // Return the result of the query
          return Db::getInstance()->executeS($sql);
      }
-
 
 }
 
