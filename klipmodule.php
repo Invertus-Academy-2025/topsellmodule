@@ -31,7 +31,7 @@ public function __construct()
 
     public function getContent()
     {
-        return $this->renderTable();
+        return $this->renderTable() . $this->sendButton();
     }
 
     public function renderTable()
@@ -39,6 +39,11 @@ public function __construct()
         $topSellingProducts = $this->getTopSellingProducts();
         $this->context->smarty->assign('products', $topSellingProducts);
         return $this->display(__FILE__, 'views/templates/table.tpl');
+    }
+
+    public function sendButton()
+    {
+        return $this->display(__FILE__, 'views/templates/button.tpl');
     }
 
      public function getTopSellingProducts($limit = 5)
