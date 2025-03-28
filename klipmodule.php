@@ -19,16 +19,6 @@ public function __construct()
 
     }
 
-    public function install()
-    {
-        return parent::install();
-    }
-
-    public function uninstall()
-    {
-        return parent::uninstall();
-    }
-
     public function getContent()
     {
         return $this->renderTable() . $this->sendButton();
@@ -38,6 +28,7 @@ public function __construct()
     {
         $topSellingProducts = $this->getTopSellingProducts();
         $this->context->smarty->assign('products', $topSellingProducts);
+
         return $this->display(__FILE__, 'views/templates/table.tpl');
     }
 
