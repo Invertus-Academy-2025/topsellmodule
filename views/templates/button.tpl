@@ -1,5 +1,8 @@
-<div class="text-end">
-    <button class="btn btn-primary btn-lg mt-3">
-        <i class="bi bi-send-fill me-2"></i>Send Data
+<div class="container mt-5">
+<form method="post" action="">
+    <input type="hidden" name="send_top_selling" value="1">
+    <button type="submit" class="btn btn-primary">
+        Send Top Selling Products
     </button>
+</form>
 </div>

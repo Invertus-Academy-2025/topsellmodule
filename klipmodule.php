@@ -21,8 +21,18 @@ public function __construct()
 
     public function getContent()
     {
-        return $this->renderTable() . $this->sendButton();
+        $output = '';
+
+        if (Tools::isSubmit('send_top_selling')) {
+            $output .= $this->sendTopSellingToApi();
+        }
+
+        $output .= $this->renderTable();
+        $output .= $this->sendButton();
+
+        return $output;
     }
+
 
     public function renderTable()
     {
@@ -53,6 +63,52 @@ public function __construct()
         // Return the result of the query
          return Db::getInstance()->executeS($sql);
      }
+
+    public function sendTopSellingToApi()
+    {
+        $topProducts = $this->getTopSellingProducts();
+        $apiUrl = 'https://localhost/api/products/save';
+
+        $success = 0;
+        $fail = 0;
+
+        foreach ($topProducts as $product) {
+            $payload = json_encode([
+                'productId' => (int) $product['id_product'],
+                'name' => $product['name'],
+                'totalSold' => (int) $product['total_sales'],
+            ]);
+
+            $ch = curl_init($apiUrl);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // disable ssl for development
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json',
+                'Accept: application/json',
+            ]);
+
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($httpCode >= 200 && $httpCode < 300) {
+                $success++;
+            } else {
+                $fail++;
+            }
+        }
+
+        // alerts printed in configuration page after submitting
+        if ($success > 0 && $fail === 0) {
+            return '<div class="alert alert-success">'.$success.' products sent successfully!</div>';
+        } elseif ($success > 0) {
+            return '<div class="alert alert-warning">'.$success.' sent, '.$fail.' failed.</div>';
+        } else {
+            return '<div class="alert alert-danger">All product sends failed.</div>';
+        }
+    }
 
 }
 

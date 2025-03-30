@@ -18,5 +18,6 @@
         <td>{$product['total_sales']}</td>
     </tr>
 {/foreach}
-
+    </tbody>
 </table>
+</div>
