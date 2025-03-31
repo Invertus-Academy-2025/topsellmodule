@@ -50,18 +50,20 @@ public function __construct()
      public function getTopSellingProducts($limit = 5)
     {
         // SQL query to get top-selling products
-         $sql = 'SELECT p.id_product, pl.name, p.reference, SUM(od.product_quantity) AS total_sales
-               FROM ' . _DB_PREFIX_ . 'orders o
-                 INNER JOIN ' . _DB_PREFIX_ . 'order_detail od ON o.id_order = od.id_order
-                 INNER JOIN ' . _DB_PREFIX_ . 'product p ON od.product_id = p.id_product
-                INNER JOIN ' . _DB_PREFIX_ . 'product_lang pl ON p.id_product = pl.id_product
-                 WHERE o.valid = 1 AND pl.id_lang = ' . (int)$this->context->language->id . '
-                 GROUP BY p.id_product
-                 ORDER BY total_sales DESC
-                 LIMIT ' . (int)$limit;
+        $query = new DbQuery();
+        $query->select('p.id_product, pl.name, p.reference, SUM(od.product_quantity) AS total_sales');
+        $query->from('orders', 'o');
+        $query->innerJoin('order_detail', 'od', 'o.id_order = od.id_order');
+        $query->innerJoin('product', 'p', 'od.product_id = p.id_product');
+        $query->innerJoin('product_lang', 'pl', 'p.id_product = pl.id_product');
+        $query->where('o.valid = 1');
+        $query->where('pl.id_lang = ' . (int)$this->context->language->id);
+        $query->groupBy('p.id_product');
+        $query->orderBy('total_sales DESC');
+        $query->limit((int)$limit);
 
         // Return the result of the query
-         return Db::getInstance()->executeS($sql);
+         return Db::getInstance()->executeS($query);
      }
 
     public function sendTopSellingToApi()
