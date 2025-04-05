@@ -21,12 +21,20 @@ public function __construct()
 
     public function getContent()
     {
-        $output = '';
+        $message = null;
+        $isError = false;
 
         if (Tools::isSubmit('send_top_selling')) {
-            $output .= $this->sendTopSellingToApi();
+            $result = $this->sendTopSellingToApi();
+            $message = $result['message'];
+            $isError = $result['error'];
         }
+        $this->smarty->assign([
+            'message' => $message,
+            'isError' => $isError
+        ]);
 
+        $output = $this->display(__FILE__, 'views/templates/messages.tpl');
         $output .= $this->renderTable();
         $output .= $this->sendButton();
 
@@ -100,9 +108,9 @@ public function __construct()
 
 
         if ($httpCode >= 200 && $httpCode < 300) {
-            return '<div class="alert alert-success">All products sent successfully!</div>';
+            return ['message' => 'All products sent successfully!', 'error' => false];
         } else {
-            return '<div class="alert alert-danger">Failed to send products. HTTP Status: ' . $httpCode . '</div>';
+            return ['message' => 'Failed to send products. HTTP status' . $httpCode, 'error' => true];
         }
     }
 
